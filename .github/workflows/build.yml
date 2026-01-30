@@ -1,0 +1,39 @@
+name: ~PHOSPHOR Build Pipeline
+
+# Se activa en cada Push, Pull Request o manualmente
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  compile-and-package:
+    name: Build Bare Metal Kernel
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Descargar el código del repo
+    - name: Checkout Source
+      uses: actions/checkout@v4
+
+    # 2. Configurar Docker (opcional pero recomendado para caché)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # 3. Ejecutar tu script maestro
+    # Esto levanta el contenedor, compila con GCC-ARM y empaqueta el TAR
+    - name: Run Build Script
+      run: |
+        chmod +x build.sh
+        ./build.sh
+
+    # 4. Subir el resultado para que lo puedas descargar
+    - name: Upload Odin Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: phosphor_recovery_odin
+        path: build/phosphor_recovery.tar.md5
+        if-no-files-found: error
+        retention-days: 5
