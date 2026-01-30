@@ -29,11 +29,14 @@ jobs:
         chmod +x build.sh
         ./build.sh
 
-    # 4. Subir el resultado para que lo puedas descargar
-    - name: Upload Odin Artifact
+    # 4. Subir el resultado (Dual Format: Odin & Heimdall)
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: phosphor_recovery_odin
-        path: build/phosphor_recovery.tar.md5
+        name: phosphor_recovery_binaries
+        # Subimos tanto el TAR (Windows) como la IMG cruda (Linux)
+        path: |
+          build/phosphor_recovery.tar.md5
+          build/recovery.img
         if-no-files-found: error
         retention-days: 5
